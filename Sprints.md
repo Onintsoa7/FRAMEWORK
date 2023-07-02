@@ -1,12 +1,12 @@
 -Sprint 1:
-Chaque url doit être rediriger dans FrontServlet
+    -Chaque url doit être rediriger dans FrontServlet
 -Sprint 2:
-Creer classe Mapping et y mettre des attributs ainsi que dans FrontServlet
+    -Creer classe Mapping et y mettre des attributs ainsi que dans FrontServlet
 -Sprint 3:
     -Utiliser la fonction init pour remplir le Hashmap de Url comme clef et Mapping comme valeur
-    1-Lister toutes les classes dans le package de classe que j'ai spécifié modèle et voir si l'url envoyer correspond à un des méthodes existant dans chaque classe
-    2-Lister toutes les methodes dans chaque classe
-
-Bonjour monsieur,
-Excusez moi je ne comprends pas très bien la question N°1 des exercices que vous nous avez donné:
-Comment calculer α. →u ou α.M ou encore ||u||?
+    -Lister toutes les classes dans le package de classe que j'ai spécifié modèle et voir si l'url envoyer correspond à un des méthodes existant dans chaque classe
+    -Lister toutes les methodes dans chaque classe
+-Sprint 4:
+    -Séparer dans framework les classes telles que : Frontservlet, Utils, Url et Mapping puis dans test-framework les classes de test, web.xml, fichiers jsp
+-Sprint 5:  
+    -Comparer l'url obtenu avec la liste annotations dans Hashmap.getKey, si il ya correspondance voir si la méthode retourne modelView et puis renvoyer dans sa page qui correspond à l'attribut vue dans ModelView
