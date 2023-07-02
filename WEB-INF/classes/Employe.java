@@ -7,6 +7,8 @@ public class Employe {
     String nom;
     String prenom;
     Date date_de_naissance;
+    public Employe() {
+    }
     public Employe(int id, String nom, String prenom, Date date_de_naissance) {
         this.id = id;
         this.nom = nom;
