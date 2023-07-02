@@ -10,6 +10,7 @@ import javax.swing.text.Utilities;
 import javax.servlet.annotation.WebServlet;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,11 +31,43 @@ public class FrontServlet extends HttpServlet {
         try {
             //entrySet -> ampiasaina ao am boucle angalana an le clef sy valeur     
             out.println("You are being redirected to FRONTSERVLET");
+
+
+
+
             ModelView modelView = (ModelView)Utils.modelDeRedirection(request, mappingUrls);
-            out.println(modelView.getVueRedirection() + " modelView.getVueRedirection()");
             RequestDispatcher dispat = request.getRequestDispatcher(modelView.getVueRedirection());
-            dispat.forward(request, response);
-            /* for (Map.Entry<String, Mapping> entry : mappingUrls.entrySet()) {
+
+            System.out.println(modelView.getVueRedirection() + " VUE DE REDIRECTION");
+            HashMap<String, Object> data = modelView.getData();                                    
+
+            Map<String, String[]> donneesJSP;
+            if (request.getParameterMap()!=null && !request.getParameterMap().isEmpty()) {
+                donneesJSP = request.getParameterMap();
+
+                out.println(donneesJSP.toString() + " donneesJSP");
+                for (String parameterName : donneesJSP.keySet()) {
+                    String[] values = donneesJSP.get(parameterName);
+                    out.println(parameterName + " : " + String.join(", ", values));
+                    request.setAttribute(parameterName,donneesJSP.get(parameterName)[0]);
+                    //get.("NOM ATTRIBUT")[0] du parametre pour recuperer les donnees
+                } 
+            }
+
+
+
+            //Ajout des valeurs venant de modele dans HashMap data dans ModelView
+            if(data != null){
+                for (Map.Entry<String, Object> entry : data.entrySet()) {
+                    String key = entry.getKey();
+                    Object value = entry.getValue();
+                    out.println(key + " - "+ value);
+                    request.setAttribute(key, value);
+                }
+            }
+            dispat.forward(request, response); 
+
+            /*  for (Map.Entry<String, Mapping> entry : mappingUrls.entrySet()) {
                 String clef = entry.getKey();// clef
                 Mapping map = entry.getValue(); // valeur
                 out.println("L' annotation: " + clef + " de valeur " + map.getClassName() + " de fonction appelée "
