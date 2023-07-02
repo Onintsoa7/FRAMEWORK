@@ -28,6 +28,7 @@
     <p>
         <a href="add-dept.gg?nomDeDepartement=Ressources humaines&nombreEmploye=12" class="btn btn-primary">ADD-EMP by link</a>
     </p>
+    <a href="json-test.gg" class="btn btn-primary">JSON TEST?</a>
 </body>
 
 </html>
