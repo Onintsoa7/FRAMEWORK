@@ -24,6 +24,7 @@ public class Departement{
         return modelView;
     }
 
+    @SessionS
     @Auth(status = "admin")
     @Url(method = "add-dept.gg")
     public ModelView addDepartement(){
@@ -43,7 +44,7 @@ public class Departement{
         return departements;
     }
     
-    @Auth(status="ano")
+    @Auth(status="admin")
     @Url(method = "add-with-arguments.gg")
     @Arguments(arguments = {"nombreEmploye"})
     public ModelView addDepartementWithArguments(Integer nombreEmploye){

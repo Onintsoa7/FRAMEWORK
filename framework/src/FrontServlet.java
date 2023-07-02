@@ -3,6 +3,7 @@ package etu1767.framework.servlet;
 import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.net.http.HttpRequest;
@@ -27,6 +28,7 @@ import etu1767.framework.FileUpload;
 import etu1767.framework.ModelView;
 import etu1767.framework.PathUpload;
 import etu1767.framework.Scope;
+import etu1767.framework.SessionS;
 import etu1767.framework.Url;
 import etu1767.framework.Arguments;
 import etu1767.framework.Utils;
@@ -42,7 +44,7 @@ public class FrontServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         try {
             // entrySet -> ampiasaina ao am boucle angalana an le clef sy valeur
-            out.println("You are being redirected to FRONTSERVLET of <FRAMEWORK DE @Ountsouu_1767> \n");
+            out.println("You are being redirected to FRONTSERVLET of @Ountsouu_1767 \n");
 
             
             Mapping map = this.getMapping(request);
@@ -63,29 +65,59 @@ public class FrontServlet extends HttpServlet {
 
             Method method = getMethod(map, obj);
             ModelView modelView = (ModelView) getModelView(request, map, obj);
-
             HashMap<String, Object> sessionsDeModelView = modelView.getSession();
             HttpSession sessionDansRequest = request.getSession();
-
+            Annotation annoteeSession = method.getAnnotation(SessionS.class);
+            if (annoteeSession != null) {
+                System.out.println("TSY NULLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
+                Field[] fields = obj.getClass().getDeclaredFields();
+                for (Field field : fields) {
+                    if (field.getName().equalsIgnoreCase("session") && field.getType().toString().equalsIgnoreCase("class java.util.HashMap")) {
+                        String getterName = "getSession";
+                        // Obtain the type of the field
+                        Class<?> fieldType = field.getType();
+                        try {
+                            // Obtain the corresponding getter method
+                            Method getterMethod = obj.getClass().getMethod(getterName, (Class<?>[]) null);
+                            System.out.println(getterMethod + " gETTERMETHOD");
+                            // Invoke the getter method to retrieve the HashMap object
+                            HashMap<String, Object> getSessionMethod = (HashMap<String, Object>) getterMethod.invoke(obj, (Object[]) null);
+                            System.out.println(getSessionMethod + " gETTERMETHOD");
+                            if (getSessionMethod == null) {
+                                System.out.println(getSessionMethod + " GETTE");
+                                for (Map.Entry<String, Object> entry : sessionsDeModelView.entrySet()) {
+                                    getSessionMethod = new HashMap<>();
+                                    System.out.println(entry.getKey() + " -- " + entry.getValue());
+                                    getSessionMethod.put(entry.getKey(), entry.getValue());
+                                }
+                                for (Map.Entry<String, Object> entry : getSessionMethod.entrySet()) {
+                                    sessionDansRequest.setAttribute(entry.getKey(), entry.getValue());
+                                }
+                            }
+                        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                            e.printStackTrace();
+                            // Handle any exceptions that may occur during method invocation
+                        }
+                    }
+                }
+            }
             for (Map.Entry<String, Object> entry : sessionsDeModelView.entrySet()) {
                 sessionDansRequest.setAttribute(entry.getKey(), entry.getValue());
             }
+            
             Enumeration<String> attributeNames = sessionDansRequest.getAttributeNames();
             while (attributeNames.hasMoreElements()) {
                 String attributeName = attributeNames.nextElement();
                 Object attributeValue = sessionDansRequest.getAttribute(attributeName);
-                System.out.println(attributeValue + " AO AM SESSION");
             }
             Object valeurDeProfile = sessionDansRequest.getAttribute("profile");
             Object etatDeProfile = sessionDansRequest.getAttribute("estConnectee");
-            System.out.println(valeurDeProfile + " VALPROFILL");
             boolean check = Utils.checkConnexion(method, request, valeurDeProfile, etatDeProfile);
-            System.out.println(check + " CHECKCHECKEJEFTGUIPOIUYTRSDFGHJKLLKJHGFFGHJK");
 
             if(check == true){
                 addData(request, modelView);
                 RequestDispatcher dispat = request.getRequestDispatcher(modelView.getVueRedirection());
-    
+                
                 System.out.println(modelView.getVueRedirection() + " VUE DE REDIRECTION");
     
                 dispat.forward(request, response);
@@ -94,7 +126,7 @@ public class FrontServlet extends HttpServlet {
             }
 
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 
@@ -119,10 +151,6 @@ public class FrontServlet extends HttpServlet {
     public void sendData(HttpServletRequest request, Object obj) throws Exception {
         Field[] fields = obj.getClass().getDeclaredFields();
         for (Field field : fields) {
-            System.out.println(field.getName()+ " FIEEEEEEEEEEEEEEEEEEEEEEEEELDDDDDDDDDDDDDDDDDDDDDDDDDDDDD  " + field.getType());
-            if(field.getName().equalsIgnoreCase("session") && field.getType().toString().equalsIgnoreCase("class java.util.HashMap")){
-                
-            }
             field.setAccessible(true);
             String value = field.getName();
             if(multiPartFormDataContentType(request)){
@@ -158,7 +186,7 @@ public class FrontServlet extends HttpServlet {
         }
     }
 
-    public void revenirANull(Object object) {
+    public void revenirANull(Object object) {   
         try {
             Field[] fields = object.getClass().getDeclaredFields();
             Object objectNull = new Object();

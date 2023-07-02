@@ -35,4 +35,7 @@
     - Création de  HashMap<String, Object> session dans ModelView qui sera rempli dans une méthode à laide des clefs profile et estConnectee ou web.xml -> nom de session, nom de profil
     - Dans frontServlet mettre dans HttpSession les sessions collectées tao am  HashMap<String, Object> session dans ModelView ou web.xml
     - Utils -> fonction checkConnexion(Method method, HttpServletRequest request, Object profilClasse, Object etat) pour vérifier l' annotations de méthode auth et du profil en cours
-
+-Sprint 12:
+    -En guise de vérification, vérifier si la méthode est annotée SessionS :    - si oui, sûr fa misy attribut HashMap<String, Object> session ao am le classe
+                                                                                -gettena iny fonction de aveo atsofoka ao daholo le session dans ModelView
+                                                                                -Rajouterna ao anaty HttpSession ihany                                

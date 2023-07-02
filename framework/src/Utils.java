@@ -162,7 +162,8 @@ public class Utils {
         if(profileClasse == null){
             profile = context.getInitParameter("profile");
             System.out.println("NULL LE PROFILLE CLASS DE NAKA AN LE ANY AM WEB.WXL " + profile);
-        }else if(profileClasse != null && (boolean)etat == true){
+        }else if(profileClasse != null){
+            if(etat == null || (profileClasse.toString().equalsIgnoreCase("admin") && (boolean)etat == true))
             profile = (String)profileClasse;
             HttpSession sessionDansRequest = request.getSession();
             sessionDansRequest.setAttribute("profile", profile);
