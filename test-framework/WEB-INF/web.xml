@@ -4,7 +4,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
 http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
 version="2.4">
-<display-name>FRAMEWORK DE @Ountsouu_1767 </display-name>
+<display-name>FRAMEWORK DE @Ountsouu_1767</display-name>
 <servlet>
     <servlet-name>FrontServlet</servlet-name>
     <servlet-class>
@@ -18,6 +18,6 @@ version="2.4">
 
 <servlet-mapping>
     <servlet-name>FrontServlet</servlet-name>
-    <url-pattern>/</url-pattern>
+    <url-pattern>*.gg</url-pattern>
 </servlet-mapping>
 </web-app>
