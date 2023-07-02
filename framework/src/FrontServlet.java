@@ -9,6 +9,7 @@ import java.lang.reflect.Parameter;
 import java.net.http.HttpRequest;
 import java.nio.file.Path;
 import javax.servlet.annotation.MultipartConfig;
+import com.google.gson.Gson;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -116,11 +117,25 @@ public class FrontServlet extends HttpServlet {
 
             if(check == true){
                 addData(request, modelView);
-                RequestDispatcher dispat = request.getRequestDispatcher(modelView.getVueRedirection());
-                
-                System.out.println(modelView.getVueRedirection() + " VUE DE REDIRECTION");
+                if (modelView.isJson() == true) {
+                    response.setContentType("application/json;charset=UTF-8");
+                    try {
+
+                    PrintWriter outJson = response.getWriter();
+                        Gson gson = new Gson();
+                        String jsonData = gson.toJson(modelView.getData());
+
+                        outJson.print(jsonData);
+                    } catch (Exception e) {
+
+                    }
+                }else{
+                    RequestDispatcher dispat = request.getRequestDispatcher(modelView.getVueRedirection());
     
-                dispat.forward(request, response);
+                    System.out.println(modelView.getVueRedirection() + " VUE DE REDIRECTION");
+    
+                    dispat.forward(request, response);
+                }
             }else{
                 throw new Exception("Non autorisée");
             }

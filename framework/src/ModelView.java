@@ -6,6 +6,14 @@ public class ModelView {
     private String vueRedirection;
     private HashMap<String, Object> data = new HashMap<>();
     private HashMap<String, Object> session = new HashMap<>();
+    private boolean isJson;
+    public ModelView(String vueRedirection, HashMap<String, Object> data, HashMap<String, Object> session,
+            boolean isJson) {
+        this.vueRedirection = vueRedirection;
+        this.data = data;
+        this.session = session;
+        this.isJson = isJson;
+    }
     public ModelView(String vueRedirection, HashMap<String, Object> data, HashMap<String, Object> session) {
         this.vueRedirection = vueRedirection;
         this.data = data;
@@ -49,6 +57,12 @@ public class ModelView {
 
     public void setSession(HashMap<String, Object> session) {
         this.session = session;
+    }
+    public boolean isJson() {
+        return isJson;
+    }
+    public void setJson(boolean isJson) {
+        this.isJson = isJson;
     }
 
 }
