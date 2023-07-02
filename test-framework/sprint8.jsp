@@ -24,7 +24,7 @@
             </thead>
             <tbody>
                 <tr>
-                    <td> <%= emp.getId() %> </td>
+                    <td> <%= emp.getId().intValue() %> </td>
                     <td> <%= emp.getNom() %> </td>
                     <td> <%= emp.getPrenom() %> </td>
                     <td> <%= emp.getDate_de_naissance() %> </td>

@@ -15,6 +15,7 @@ import javax.swing.text.Utilities;
 import javax.servlet.annotation.WebServlet;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +42,7 @@ public class FrontServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         try {
             // entrySet -> ampiasaina ao am boucle angalana an le clef sy valeur
-            out.println("You are being redirected to FRONTSERVLET");
+            out.println("You are being redirected to FRONTSERVLET of <FRAMEWORK DE @Ountsouu_1767> \n");
 
             
             Mapping map = this.getMapping(request);
@@ -57,22 +58,43 @@ public class FrontServlet extends HttpServlet {
                 obj = classe.getDeclaredConstructor().newInstance();
                 System.out.println("VRAIMENT BESOIN DE NOUVELLE INSTANCE");
             }
-            System.out.println(obj + " ADRESSEE");
+            System.out.println(obj + " ADRESSE");
             sendData(request, obj);
 
             Method method = getMethod(map, obj);
             ModelView modelView = (ModelView) getModelView(request, map, obj);
 
+            HashMap<String, Object> sessionsDeModelView = modelView.getSession();
+            HttpSession sessionDansRequest = request.getSession();
+
+            for (Map.Entry<String, Object> entry : sessionsDeModelView.entrySet()) {
+                sessionDansRequest.setAttribute(entry.getKey(), entry.getValue());
+            }
+            Enumeration<String> attributeNames = sessionDansRequest.getAttributeNames();
+            while (attributeNames.hasMoreElements()) {
+                String attributeName = attributeNames.nextElement();
+                Object attributeValue = sessionDansRequest.getAttribute(attributeName);
+                System.out.println(attributeValue + " AO AM SESSION");
+            }
+            Object valeurDeProfile = sessionDansRequest.getAttribute("profile");
+            Object etatDeProfile = sessionDansRequest.getAttribute("estConnectee");
+            System.out.println(valeurDeProfile + " VALPROFILL");
+            boolean check = Utils.checkConnexion(method, request, valeurDeProfile, etatDeProfile);
+            System.out.println(check + " CHECKCHECKEJEFTGUIPOIUYTRSDFGHJKLLKJHGFFGHJK");
+
+            if(check == true){
                 addData(request, modelView);
                 RequestDispatcher dispat = request.getRequestDispatcher(modelView.getVueRedirection());
     
                 System.out.println(modelView.getVueRedirection() + " VUE DE REDIRECTION");
     
                 dispat.forward(request, response);
+            }else{
+                throw new Exception("Non autorisée");
+            }
 
         } catch (Exception e) {
-            out.println(e.getMessage() + "\n");
-            e.printStackTrace();
+
         }
     }
 
@@ -97,6 +119,10 @@ public class FrontServlet extends HttpServlet {
     public void sendData(HttpServletRequest request, Object obj) throws Exception {
         Field[] fields = obj.getClass().getDeclaredFields();
         for (Field field : fields) {
+            System.out.println(field.getName()+ " FIEEEEEEEEEEEEEEEEEEEEEEEEELDDDDDDDDDDDDDDDDDDDDDDDDDDDDD  " + field.getType());
+            if(field.getName().equalsIgnoreCase("session") && field.getType().toString().equalsIgnoreCase("class java.util.HashMap")){
+                
+            }
             field.setAccessible(true);
             String value = field.getName();
             if(multiPartFormDataContentType(request)){
@@ -146,11 +172,6 @@ public class FrontServlet extends HttpServlet {
                 System.out.println(setterName + " SETTERNAME");
                 // Obtenir le type du champ
                 Class<?> fieldType = field.getType();
-                List<Class<?>> nonNullableTypes = typesNonNullables();
-                for (int i = 0; i < nonNullableTypes.size(); i++) {
-                    if(fieldType.toString().equalsIgnoreCase(nonNullableTypes.get(i).toString()))
-                    System.out.println("NON NULLABLE" + fieldType);
-                }
                 objectNull = null;
                 // Obtenir la méthode de setter correspondante
                 Method setterMethod = object.getClass().getMethod(setterName, fieldType);
@@ -162,19 +183,6 @@ public class FrontServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public List<Class<?>> typesNonNullables(){
-        List<Class<?>> nonNullableTypes = new ArrayList<>();
-        nonNullableTypes.add(boolean.class);
-        nonNullableTypes.add(byte.class);
-        nonNullableTypes.add(short.class);
-        nonNullableTypes.add(int.class);
-        nonNullableTypes.add(long.class);
-        nonNullableTypes.add(float.class);
-        nonNullableTypes.add(double.class);
-        nonNullableTypes.add(char.class);
-        return nonNullableTypes;
     }
 public static boolean multiPartFormDataContentType(HttpServletRequest request){
     String contentType = request.getContentType();

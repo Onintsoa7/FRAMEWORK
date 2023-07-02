@@ -156,4 +156,34 @@ public class Utils {
         }
     }
     }
+    public static boolean checkConnexion(Method method, HttpServletRequest request, Object profileClasse, Object etat) throws ServletException {
+        String profile = null;
+        ServletContext context = request.getServletContext();
+        if(profileClasse == null){
+            profile = context.getInitParameter("profile");
+            System.out.println("NULL LE PROFILLE CLASS DE NAKA AN LE ANY AM WEB.WXL " + profile);
+        }else if(profileClasse != null && (boolean)etat == true){
+            profile = (String)profileClasse;
+            HttpSession sessionDansRequest = request.getSession();
+            sessionDansRequest.setAttribute("profile", profile);
+            System.out.println("TSY NULL LE PROFILeL CLASS " + profile);
+        }else{
+            return false;
+        }
+        Annotation annotation = method.getAnnotation(Auth.class);
+        if(annotation != null){
+            String annotationValeur = method.getAnnotation(Auth.class).status();
+            System.out.println(annotationValeur + " VALEUR AUTHENTIFICATION");
+            if(annotationValeur.equalsIgnoreCase("admin")){
+                if(annotationValeur.equalsIgnoreCase(profile)){
+                    return true;
+                }
+                return false;
+            }else if(annotationValeur.equalsIgnoreCase("ano")){
+                return true;
+            }
+            return false;
+        }
+        return true;
+    }
 }
