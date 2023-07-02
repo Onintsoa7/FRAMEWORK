@@ -6,6 +6,11 @@ public class ModelView {
     private String vueRedirection;
     private HashMap<String, Object> data = new HashMap<>();
     private HashMap<String, Object> session = new HashMap<>();
+    public ModelView(String vueRedirection, HashMap<String, Object> data, HashMap<String, Object> session) {
+        this.vueRedirection = vueRedirection;
+        this.data = data;
+        this.session = session;
+    }
     //Ajout de valeur dans Hashmap data
     public void addItem(String stringToAdd, Object objectToAdd){
         this.getData().put(stringToAdd, objectToAdd);

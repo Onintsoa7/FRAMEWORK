@@ -30,6 +30,9 @@
 -Sprint 10:(Singleton)
     -Création de l' interface Scope qui sera une annotation pour vérifier si une classe est singleton ou non
     -Ajout de l'attribut HashMap<Class, Object> singleton dans FrontServlet qui sera rempli dans init()
-    -Remettre à null la valeur des attributs de l' objet
+-Sprint 11:
+    - Création auth asina String status par défaut ano
+    - Création de  HashMap<String, Object> session dans ModelView qui sera rempli dans une méthode à laide des clefs profile et estConnectee ou web.xml -> nom de session, nom de profil
+    - Dans frontServlet mettre dans HttpSession les sessions collectées tao am  HashMap<String, Object> session dans ModelView ou web.xml
+    - Utils -> fonction checkConnexion(Method method, HttpServletRequest request, Object profilClasse, Object etat) pour vérifier l' annotations de méthode auth et du profil en cours
 
- 

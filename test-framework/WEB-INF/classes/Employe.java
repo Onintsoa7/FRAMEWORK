@@ -1,5 +1,4 @@
 package modele;
-import etu1767.framework.ModelView;
 import etu1767.framework.*;
 
 import java.io.File;
@@ -63,26 +62,6 @@ public class Employe {
         return modelView;
     }
     
-    /* @Url(method = "add-emp-with-arguments.gg")
-    @Arguments(arguments = {"id", "nom", "prenom", "date_de_naissance"})
-    public ModelView addEmployeWithArguments(Integer id, String nom, String prenom, Date date_de_naissance){
-        ModelView modelView = new ModelView("sprint8.jsp");
-        List<Employe> employes = listeEmployers();
-        Employe employe = new Employe(id, nom, prenom, date_de_naissance);
-        System.out.println(date_de_naissance + " date_de_naissancedate_de_naissancedate_de_naissancedate_de_naissance");
-        for (Integer i = 0; i < employes.size(); i++) {
-            System.out.println(employes.get(i).getDate_de_naissance() + " employes.get(i).getDate_de_naissance()");
-            if(employe.getNom().equalsIgnoreCase(employes.get(i).getNom()) == true 
-            && employe.getPrenom().equalsIgnoreCase(employes.get(i).getPrenom()) == true 
-            && employe.getId() == employes.get(i).getId() 
-            && employe.getDate_de_naissance().compareTo(employes.get(i).getDate_de_naissance()) == 0){
-                modelView.addItem("employer", employe); 
-            }
-        }
-        //3897-08-01
-        return modelView;
-    } */
-
     @Url(method = "add-emp-with-arguments.gg")
     @Arguments(arguments = {"id", "nom", "prenom", "date_de_naissance" , "fileEmploye"})
     public ModelView addEmployeWithArguments(Integer id, String nom, String prenom, Date date_de_naissance , FileUpload fileEmploye){

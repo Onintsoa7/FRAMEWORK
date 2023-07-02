@@ -21,7 +21,7 @@ version="2.4">
     <url-pattern>*.gg</url-pattern>
 </servlet-mapping>
 <context-param>
-    <param-name>profil</param-name>
+    <param-name>profile</param-name>
     <param-value>ano</param-value>
 </context-param>
 </web-app>
