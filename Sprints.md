@@ -38,4 +38,9 @@
 -Sprint 12:
     -En guise de vérification, vérifier si la méthode est annotée SessionS :    - si oui, sûr fa misy attribut HashMap<String, Object> session ao am le classe
                                                                                 -gettena iny fonction de aveo atsofoka ao daholo le session dans ModelView
-                                                                                -Rajouterna ao anaty HttpSession ihany                                
+                                                                                -Rajouterna ao anaty HttpSession ihany 
+-Sprint 13:
+    -Ajout attribut isJson de type boolean dans ModelView
+    -Verification dans frontServlet:-si true: ne pas dispatcher la page
+                                                afficher au format json les valeurs(gson.jar)
+                                    -si false: rien ne change

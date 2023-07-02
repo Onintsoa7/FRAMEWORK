@@ -54,6 +54,7 @@ public class Employe {
         ModelView modelView = new ModelView("listeEmp.jsp");
         List<Employe> employes = listeEmployers();
         modelView.addItem("allEmploye", employes); 
+        modelView.setJson(true);
         return modelView;
     }
     @Url(method = "add-emp.gg")
@@ -68,6 +69,7 @@ public class Employe {
         ModelView modelView = new ModelView("sprint8.jsp");
         Employe employe = new Employe(id, nom, prenom, date_de_naissance , fileEmploye);
         modelView.addItem("employer", employe); 
+        modelView.setJson(true);
         return modelView;
     }
     public Integer getId() {
