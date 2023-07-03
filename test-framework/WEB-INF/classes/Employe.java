@@ -38,6 +38,8 @@ public class Employe {
         return modelView;
     }
 
+    @JsonEd
+    @Url(method = "json-test.gg")
     public List<Employe> listeEmployers(){
         List<Employe> employes = new ArrayList<>();
         Employe employe1 = new Employe(1,"Jeon", "JK", new Date(1997, 7, 1));
@@ -54,7 +56,6 @@ public class Employe {
         ModelView modelView = new ModelView("listeEmp.jsp");
         List<Employe> employes = listeEmployers();
         modelView.addItem("allEmploye", employes); 
-        modelView.setJson(true);
         return modelView;
     }
     @Url(method = "add-emp.gg")
@@ -72,6 +73,8 @@ public class Employe {
         modelView.setJson(true);
         return modelView;
     }
+
+
     public Integer getId() {
         return id;
     }

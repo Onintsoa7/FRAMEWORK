@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.file.Path;
 import javax.servlet.annotation.MultipartConfig;
 import com.google.gson.Gson;
@@ -26,6 +27,7 @@ import java.util.logging.Logger;
 
 import etu1767.framework.Mapping;
 import etu1767.framework.FileUpload;
+import etu1767.framework.JsonEd;
 import etu1767.framework.ModelView;
 import etu1767.framework.PathUpload;
 import etu1767.framework.Scope;
@@ -39,6 +41,7 @@ public class FrontServlet extends HttpServlet {
     HashMap<String, Mapping> mappingUrls;
     String nomDePackage;
     HashMap<Class, Object> singletons = new HashMap<>();
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -47,17 +50,16 @@ public class FrontServlet extends HttpServlet {
             // entrySet -> ampiasaina ao am boucle angalana an le clef sy valeur
             out.println("You are being redirected to FRONTSERVLET of @Ountsouu_1767 \n");
 
-            
             Mapping map = this.getMapping(request);
             Class classe = Class.forName(map.getClassName());
 
             System.out.println(classe + " classe " + getSingletons().size());
             Object obj = null;
-            if(this.getSingletons().containsKey(classe)){
+            if (this.getSingletons().containsKey(classe)) {
                 obj = this.getSingletons().get(classe);
                 revenirANull(obj);
                 System.out.println("PAS BESOIN DE NOUVELLE INSTANCE");
-            }else{
+            } else {
                 obj = classe.getDeclaredConstructor().newInstance();
                 System.out.println("VRAIMENT BESOIN DE NOUVELLE INSTANCE");
             }
@@ -65,79 +67,82 @@ public class FrontServlet extends HttpServlet {
             sendData(request, obj);
 
             Method method = getMethod(map, obj);
-            ModelView modelView = (ModelView) getModelView(request, map, obj);
-            HashMap<String, Object> sessionsDeModelView = modelView.getSession();
-            HttpSession sessionDansRequest = request.getSession();
-            Annotation annoteeSession = method.getAnnotation(SessionS.class);
-            if (annoteeSession != null) {
-                System.out.println("TSY NULLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
-                Field[] fields = obj.getClass().getDeclaredFields();
-                for (Field field : fields) {
-                    if (field.getName().equalsIgnoreCase("session") && field.getType().toString().equalsIgnoreCase("class java.util.HashMap")) {
-                        String getterName = "getSession";
-                        // Obtain the type of the field
-                        Class<?> fieldType = field.getType();
-                        try {
-                            // Obtain the corresponding getter method
-                            Method getterMethod = obj.getClass().getMethod(getterName, (Class<?>[]) null);
-                            System.out.println(getterMethod + " gETTERMETHOD");
-                            // Invoke the getter method to retrieve the HashMap object
-                            HashMap<String, Object> getSessionMethod = (HashMap<String, Object>) getterMethod.invoke(obj, (Object[]) null);
-                            System.out.println(getSessionMethod + " gETTERMETHOD");
-                            if (getSessionMethod == null) {
-                                System.out.println(getSessionMethod + " GETTE");
-                                for (Map.Entry<String, Object> entry : sessionsDeModelView.entrySet()) {
-                                    getSessionMethod = new HashMap<>();
-                                    System.out.println(entry.getKey() + " -- " + entry.getValue());
-                                    getSessionMethod.put(entry.getKey(), entry.getValue());
+
+            if (!method.getReturnType().toString().equalsIgnoreCase("class etu1767.framework.ModelView")) {
+                System.out.println("IFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+                if (method.getAnnotation(JsonEd.class) != null) {
+                    Object returnValue = method.invoke(obj);
+                    transformToJson(returnValue, response);
+                } else {
+                    out.print("Votre fonction n' a pas été annotée pour retourner un format Json");
+                }
+            } else {
+                System.out.println("ELSEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+                ModelView modelView = (ModelView) getModelView(request, map, obj);
+                HashMap<String, Object> sessionsDeModelView = modelView.getSession();
+                HttpSession sessionDansRequest = request.getSession();
+                Annotation annoteeSession = method.getAnnotation(SessionS.class);
+                if (annoteeSession != null) {
+                    Field[] fields = obj.getClass().getDeclaredFields();
+                    for (Field field : fields) {
+                        if (field.getName().equalsIgnoreCase("session")
+                                && field.getType().toString().equalsIgnoreCase("class java.util.HashMap")) {
+                            String getterName = "getSession";
+                            // Obtain the type of the field
+                            Class<?> fieldType = field.getType();
+                            try {
+                                // Obtain the corresponding getter method
+                                Method getterMethod = obj.getClass().getMethod(getterName, (Class<?>[]) null);
+                                System.out.println(getterMethod + " gETTERMETHOD");
+                                // Invoke the getter method to retrieve the HashMap object
+                                HashMap<String, Object> getSessionMethod = (HashMap<String, Object>) getterMethod.invoke(obj, (Object[]) null);
+                                System.out.println(getSessionMethod + " gETTERMETHOD");
+                                if (getSessionMethod == null) {
+                                    System.out.println(getSessionMethod + " GETTE");
+                                    for (Map.Entry<String, Object> entry : sessionsDeModelView.entrySet()) {
+                                        getSessionMethod = new HashMap<>();
+                                        System.out.println(entry.getKey() + " -- " + entry.getValue());
+                                        getSessionMethod.put(entry.getKey(), entry.getValue());
+                                    }
+                                    for (Map.Entry<String, Object> entry : getSessionMethod.entrySet()) {
+                                        sessionDansRequest.setAttribute(entry.getKey(), entry.getValue());
+                                    }
                                 }
-                                for (Map.Entry<String, Object> entry : getSessionMethod.entrySet()) {
-                                    sessionDansRequest.setAttribute(entry.getKey(), entry.getValue());
-                                }
+                            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                                e.printStackTrace();
+                                // Handle any exceptions that may occur during method invocation
                             }
-                        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                            e.printStackTrace();
-                            // Handle any exceptions that may occur during method invocation
                         }
                     }
                 }
-            }
-            for (Map.Entry<String, Object> entry : sessionsDeModelView.entrySet()) {
-                sessionDansRequest.setAttribute(entry.getKey(), entry.getValue());
-            }
-            
-            Enumeration<String> attributeNames = sessionDansRequest.getAttributeNames();
-            while (attributeNames.hasMoreElements()) {
-                String attributeName = attributeNames.nextElement();
-                Object attributeValue = sessionDansRequest.getAttribute(attributeName);
-            }
-            Object valeurDeProfile = sessionDansRequest.getAttribute("profile");
-            Object etatDeProfile = sessionDansRequest.getAttribute("estConnectee");
-            boolean check = Utils.checkConnexion(method, request, valeurDeProfile, etatDeProfile);
-
-            if(check == true){
-                addData(request, modelView);
-                if (modelView.isJson() == true) {
-                    response.setContentType("application/json;charset=UTF-8");
-                    try {
-
-                    PrintWriter outJson = response.getWriter();
-                        Gson gson = new Gson();
-                        String jsonData = gson.toJson(modelView.getData());
-
-                        outJson.print(jsonData);
-                    } catch (Exception e) {
-
-                    }
-                }else{
-                    RequestDispatcher dispat = request.getRequestDispatcher(modelView.getVueRedirection());
-    
-                    System.out.println(modelView.getVueRedirection() + " VUE DE REDIRECTION");
-    
-                    dispat.forward(request, response);
+                for (Map.Entry<String, Object> entry : sessionsDeModelView.entrySet()) {
+                    sessionDansRequest.setAttribute(entry.getKey(), entry.getValue());
                 }
-            }else{
-                throw new Exception("Non autorisée");
+
+                Enumeration<String> attributeNames = sessionDansRequest.getAttributeNames();
+                while (attributeNames.hasMoreElements()) {
+                    String attributeName = attributeNames.nextElement();
+                    Object attributeValue = sessionDansRequest.getAttribute(attributeName);
+                }
+                Object valeurDeProfile = sessionDansRequest.getAttribute("profile");
+                Object etatDeProfile = sessionDansRequest.getAttribute("estConnectee");
+                boolean check = Utils.checkConnexion(method, request, valeurDeProfile, etatDeProfile);
+
+                Annotation annoteeJson = method.getAnnotation(JsonEd.class);
+                if (check == true) {
+                    addData(request, modelView);
+                    if (modelView.isJson() == true) {
+                        transformToJson(modelView.getData(), response);
+                    } else {
+                        RequestDispatcher dispat = request.getRequestDispatcher(modelView.getVueRedirection());
+
+                        System.out.println(modelView.getVueRedirection() + " VUE DE REDIRECTION");
+
+                        dispat.forward(request, response);
+                    }
+                } else {
+                    throw new Exception("Non autorisée");
+                }
             }
 
         } catch (Exception e) {
@@ -168,14 +173,14 @@ public class FrontServlet extends HttpServlet {
         for (Field field : fields) {
             field.setAccessible(true);
             String value = field.getName();
-            if(multiPartFormDataContentType(request)){
-            if (value != null) {
-                    if(field.getType().getSimpleName().equalsIgnoreCase("FileUpload") == true){
+            if (multiPartFormDataContentType(request)) {
+                if (value != null) {
+                    if (field.getType().getSimpleName().equalsIgnoreCase("FileUpload") == true) {
                         try {
                             System.out.println("THERE IS A FILE TO UPLOAD TAFIDITRAAAAAAAAAAAA");
-                            Part filePart=request.getPart(value);
-                            FileUpload upload=new FileUpload();
-                            upload.setFileName(filePart.getSubmittedFileName()); 
+                            Part filePart = request.getPart(value);
+                            FileUpload upload = new FileUpload();
+                            upload.setFileName(filePart.getSubmittedFileName());
                             InputStream inputStream = filePart.getInputStream();
                             upload.setData(inputStream.readAllBytes());
                             System.out.println(upload.getData());
@@ -185,13 +190,13 @@ public class FrontServlet extends HttpServlet {
                             if (annotation != null) {
                                 String filePath = annotation.filePath();
                                 Utils.uploadFile(upload, filePath, value, request);
-                            }else{
+                            } else {
                                 System.out.println("Aucune annotation donnée à PathUpload");
                             }
                         } catch (Exception e) {
                             throw new Exception("Verifier si vous avez bien télécharger quelque chose");
                         }
-                    }else{
+                    } else {
                         String valeur = request.getParameter(field.getName());
                         Class castValue = (Class<?>) field.getType();
                         field.set(obj, Utils.cast(valeur, castValue));
@@ -201,15 +206,15 @@ public class FrontServlet extends HttpServlet {
         }
     }
 
-    public void revenirANull(Object object) {   
+    public void revenirANull(Object object) {
         try {
             Field[] fields = object.getClass().getDeclaredFields();
             Object objectNull = new Object();
-            
+
             for (Field field : fields) {
                 // Obtenir le nom du champ
                 String fieldName = field.getName();
-                
+
                 // Convertir le nom du champ en nom de méthode de setter
                 String setterName = "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
                 System.out.println(setterName + " SETTERNAME");
@@ -220,20 +225,21 @@ public class FrontServlet extends HttpServlet {
                 Method setterMethod = object.getClass().getMethod(setterName, fieldType);
                 System.out.println(setterMethod + " SETTERMETHOD");
                 // Appeler le setter avec la valeur null
-                
+
                 setterMethod.invoke(object, objectNull);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-public static boolean multiPartFormDataContentType(HttpServletRequest request){
-    String contentType = request.getContentType();
-    if(contentType != null && contentType.startsWith("multipart/form-data")){
-        return true;
+
+    public static boolean multiPartFormDataContentType(HttpServletRequest request) {
+        String contentType = request.getContentType();
+        if (contentType != null && contentType.startsWith("multipart/form-data")) {
+            return true;
+        }
+        return false;
     }
-    return false;
-}
 
     public String[] avoirLaListeArguments(Method methodCalled) {
         String[] thoseAre = null;
@@ -295,18 +301,18 @@ public static boolean multiPartFormDataContentType(HttpServletRequest request){
 
     public void init() throws ServletException {
         this.setNomDePackage(this.getInitParameter("packageDeScan"));
-        HashMap hash = new HashMap<Class,Object>();
+        HashMap hash = new HashMap<Class, Object>();
         try {
             System.out.println(this.getNomDePackage() + " nom de package");
             setMappingUrls(Utils.getMethodesAnnotees(this.getNomDePackage(), Url.class));
             List<Class<?>> classes = Utils.getLesClasses(this.getNomDePackage());
             for (Class<?> class1 : classes) {
                 Annotation annotation = class1.getAnnotation(Scope.class);
-                    if(annotation != null){
-                        System.out.println(class1 + " ANNOTERRR SCOPPEE");
-                        Object obj = class1.getDeclaredConstructor().newInstance();
-                        singletons.put(class1, obj);
-                    }
+                if (annotation != null) {
+                    System.out.println(class1 + " ANNOTERRR SCOPPEE");
+                    Object obj = class1.getDeclaredConstructor().newInstance();
+                    singletons.put(class1, obj);
+                }
             }
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
@@ -317,7 +323,18 @@ public static boolean multiPartFormDataContentType(HttpServletRequest request){
         }
     }
 
-    
+    public void transformToJson(Object returnValue, HttpServletResponse response) {
+        try {
+            response.setContentType("application/json;charset=UTF-8");
+            PrintWriter outJson = response.getWriter();
+            Gson gson = new Gson();
+            String jsonData = gson.toJson(returnValue);
+
+            outJson.print(jsonData);
+        } catch (Exception e) {
+
+        }
+    }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

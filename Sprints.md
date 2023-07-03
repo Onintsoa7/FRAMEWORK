@@ -44,3 +44,7 @@
     -Verification dans frontServlet:-si true: ne pas dispatcher la page
                                                 afficher au format json les valeurs(gson.jar)
                                     -si false: rien ne change
+-Sprint 14:
+    -Création de l' annotation JsonEd 
+    -Vérifier dans frontServlet si la méthode est annotée JsonEd avec un type de retour autre que ModelView
+    -Mettre au format json les valeurs de retour(gson.jar)
