@@ -48,3 +48,6 @@
     -Création de l' annotation JsonEd 
     -Vérifier dans frontServlet si la méthode est annotée JsonEd avec un type de retour autre que ModelView
     -Mettre au format json les valeurs de retour(gson.jar)
+-Sprint 15:
+    -Création attribut boolean invalidateSession dans ModelView que l' on set true si on veut effacer toutes les sessions existantes
+    -Ajout de l' attribut List<String> removeSessions où mettre les sessions spécifiques à supprimer

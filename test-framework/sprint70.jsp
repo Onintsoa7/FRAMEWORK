@@ -9,6 +9,9 @@
 </head>
 <body>
     <div class="container">
+        <p>
+            <a href="logOut.gg" class="btn btn-primary">SE DECONNECTER</a>
+        </p>
         <h1 class="mt-4">FORMULAIRE</h1>
         <% 
         String nomDeDepartement = (String)request.getAttribute("nomDeDepartement"); 

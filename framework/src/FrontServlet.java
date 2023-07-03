@@ -67,9 +67,7 @@ public class FrontServlet extends HttpServlet {
             sendData(request, obj);
 
             Method method = getMethod(map, obj);
-
             if (!method.getReturnType().toString().equalsIgnoreCase("class etu1767.framework.ModelView")) {
-                System.out.println("IFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
                 if (method.getAnnotation(JsonEd.class) != null) {
                     Object returnValue = method.invoke(obj);
                     transformToJson(returnValue, response);
@@ -77,10 +75,31 @@ public class FrontServlet extends HttpServlet {
                     out.print("Votre fonction n' a pas été annotée pour retourner un format Json");
                 }
             } else {
-                System.out.println("ELSEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
                 ModelView modelView = (ModelView) getModelView(request, map, obj);
                 HashMap<String, Object> sessionsDeModelView = modelView.getSession();
                 HttpSession sessionDansRequest = request.getSession();
+                List<String> sessionASupprimer = modelView.getRemoveSession();
+                if (modelView.isInvalidateSession() && sessionASupprimer != null) {
+                    for (String attributeName : sessionASupprimer) {
+                        Enumeration<String> attributeNames = sessionDansRequest.getAttributeNames();
+                        while (attributeNames.hasMoreElements()) {
+                            String sessionAttributeName = attributeNames.nextElement();
+                            if (attributeName.equalsIgnoreCase(sessionAttributeName)) {
+                                sessionDansRequest.removeAttribute(sessionAttributeName);
+                                System.out.println("Removed session attribute: " + sessionAttributeName);
+                            }
+                        }
+                    }
+                    Enumeration<String> attributeNames = sessionDansRequest.getAttributeNames();
+                    while (attributeNames.hasMoreElements()) {
+                        String attributeName = attributeNames.nextElement();
+                        Object attributeValue = sessionDansRequest.getAttribute(attributeName);
+                        System.out.println("SESSION EXISTANT " + attributeName);
+                    }/* 
+                    sessionDansRequest.invalidate(); */
+                    response.sendRedirect(modelView.getVueRedirection()); 
+                    return;
+                }
                 Annotation annoteeSession = method.getAnnotation(SessionS.class);
                 if (annoteeSession != null) {
                     Field[] fields = obj.getClass().getDeclaredFields();

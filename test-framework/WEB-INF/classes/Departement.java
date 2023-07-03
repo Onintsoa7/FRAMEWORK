@@ -58,6 +58,16 @@ public class Departement{
         }
         return modelView;
     }
+    @Url(method = "logOut.gg")
+    public ModelView disConnect(){
+        ModelView modelView = new ModelView("departement.jsp");
+        List<String> sessionToRemove = new ArrayList<>();
+        sessionToRemove.add("profile");/* 
+        sessionToRemove.add("estConnectee"); */
+        modelView.setRemoveSession(sessionToRemove);
+        modelView.setInvalidateSession(true);
+        return modelView;
+    }
     
     public String getNomDeDepartement() {
         return nomDeDepartement;

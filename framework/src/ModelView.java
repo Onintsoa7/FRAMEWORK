@@ -1,12 +1,32 @@
 package etu1767.framework;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class ModelView {
     private String vueRedirection;
     private HashMap<String, Object> data = new HashMap<>();
     private HashMap<String, Object> session = new HashMap<>();
     private boolean isJson;
+    private boolean invalidateSession;
+    private List<String> removeSession;
+    public ModelView(String vueRedirection, HashMap<String, Object> data, HashMap<String, Object> session,
+            boolean isJson, boolean invalidateSession, List<String> removeSession) {
+        this.vueRedirection = vueRedirection;
+        this.data = data;
+        this.session = session;
+        this.isJson = isJson;
+        this.invalidateSession = invalidateSession;
+        this.removeSession = removeSession;
+    }
+    public ModelView(String vueRedirection, HashMap<String, Object> data, HashMap<String, Object> session,
+            boolean isJson, boolean invalidateSession) {
+        this.vueRedirection = vueRedirection;
+        this.data = data;
+        this.session = session;
+        this.isJson = isJson;
+        this.invalidateSession = invalidateSession;
+    }
     public ModelView(String vueRedirection, HashMap<String, Object> data, HashMap<String, Object> session,
             boolean isJson) {
         this.vueRedirection = vueRedirection;
@@ -63,6 +83,18 @@ public class ModelView {
     }
     public void setJson(boolean isJson) {
         this.isJson = isJson;
+    }
+    public boolean isInvalidateSession() {
+        return invalidateSession;
+    }
+    public void setInvalidateSession(boolean invalidateSession) {
+        this.invalidateSession = invalidateSession;
+    }
+    public List<String> getRemoveSession() {
+        return removeSession;
+    }
+    public void setRemoveSession(List<String> removeSession) {
+        this.removeSession = removeSession;
     }
 
 }
