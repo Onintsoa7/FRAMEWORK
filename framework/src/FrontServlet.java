@@ -189,9 +189,12 @@ public class FrontServlet extends HttpServlet {
 
     public void sendData(HttpServletRequest request, Object obj) throws Exception {
         Field[] fields = obj.getClass().getDeclaredFields();
+        System.out.println(fields.length + " LENGTH");
         for (Field field : fields) {
             field.setAccessible(true);
             String value = field.getName();
+            System.out.println("FIELD NAMRRRRRRRRRRRRRRRRRRRRRR" + field.getName());
+            System.out.println("FIELD TYPEEEEEEUUUUUUUUUUUUUUUU" + field.getType().getSimpleName());
             if (multiPartFormDataContentType(request)) {
                 if (value != null) {
                     if (field.getType().getSimpleName().equalsIgnoreCase("FileUpload") == true) {
